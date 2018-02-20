@@ -1,0 +1,46 @@
+version: "3"
+services:
+  reciever:
+    build:
+      dockerfile: Dockerfile
+      context: ./Reciever
+    command: python reciever.py
+    volumes:
+      - ./Reciever:/home/elena/DockerWorkspace/Task1
+    depends_on:
+      - db
+      - rabbit    
+
+
+  producer:
+    build:
+      dockerfile: Dockerfile
+      context: ./Sender
+    command: python sender.py
+    volumes:
+      - ./Sender:/home/elena/DockerWorkspace/Task1
+    depends_on:
+      - db
+      - rabbit
+
+
+  db:
+    image: postgre
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=db_usr
+      - POSTGRES_PASSWORD=mysecretpassword
+      - POSTGRES_NAME=my_db
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+    hostname: db
+
+  rabbit:
+    image: rabbitmq:3
+    ports:
+      - 5672:5672
+    hostname: rabbit
+
+
+
